@@ -3,6 +3,7 @@
 #include "StrNumData.h"
 #include <iostream>
 #include <cstring>
+#include <ctime>
 using namespace std;
 class Goods
 {
@@ -18,6 +19,7 @@ class Goods
 	};
 	string m_name;
 	Date m_reg;
+	time_t t_reg;
 	int m_shelf_life;
 	Money m_price;
 	TYPE m_type;
@@ -79,11 +81,12 @@ class Goods
 			{
 				return "House chemicals";
 			}
-			return "120";
+			return "20";
 		}break;
 		default: return "Unknown type"; break;
 		}
 	}
+	
 
 public:
 	Goods(string name, string reg_date,int amount,long price_one_rub, short price_one_k,int type)
@@ -93,8 +96,14 @@ public:
 		m_amount = amount;
 		m_type = TYPE(type);
 		m_shelf_life = atoi(Type(false).c_str());
+		t_reg = time(NULL);
 		m_price.SetAcc(price_one_rub, price_one_k);
 		m_reg(reg_date.c_str());
+	}
+	long long ProcSec()
+	{
+		time_t t = time(NULL);
+		return t-t_reg;
 	}
 	void SetAmount(int delta_amount)
 	{
@@ -106,7 +115,7 @@ public:
 		m_price.SetAcc(price_one_rub, price_one_k);
 		Total_price();
 	}
-	void Print_Num()
+	void ToString()
 	{
 		string buff[15];
 		StrNumData s;
@@ -114,8 +123,18 @@ public:
 	}
 	friend ostream& operator<<(ostream& out, Goods& g)
 	{
-		out << "\nName: " << g.m_name << "\nID: " << g.m_id << "\nType: " << g.Type(true) <<"\nShelf life: "<<g.m_shelf_life <<" days\nAmount: " << g.m_amount << "\nPrice: " << g.m_price<<" RUB";
+		g.SetSale();
+		out << "\nName: " << g.m_name << "\nID: " << g.m_id << "\nType: " << g.Type(true) <<"\nShelf life: "<<g.m_shelf_life <<" days\nAmount: " << g.m_amount << "\nPrice: " << g.m_price<<" RUB ";
 		return out;
 	}
-
+	void SetSale()
+	{
+		static Money first_price = m_price;
+		long long t_duration = ProcSec()-m_shelf_life;
+		if (t_duration >= m_shelf_life)
+		{
+			m_price = m_price * (1 - 0.01 * t_duration / m_shelf_life);
+			cout << "\nSale: -"<<first_price-m_price;
+		}
+	}
 };

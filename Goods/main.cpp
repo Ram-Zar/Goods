@@ -2,12 +2,15 @@
 #include <iostream>
 #include <cstring>
 #include <clocale>
+#include "windows.h"
+#pragma warning (disable:4996)
 using namespace std;
 int main()
 {
 	setlocale(0, "russian");
-	Goods g("aaa", "2020.12.12",6, 89, 99,0);
+	Goods g("Творог", "2020.06.18", 6, 69, 99, 0);
+	Sleep(20000);
 	cout << g;
-	g.Print_Num();
+	g.ToString();
 	return 0;
 }
