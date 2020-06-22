@@ -86,8 +86,21 @@ class Goods
 		default: return "Unknown type"; break;
 		}
 	}
-	
-
+	long long ProcSec()
+	{
+		time_t t = time(NULL);
+		return t-t_reg;
+	}
+	void SetSale()
+	{
+		static Money first_price = m_price;
+		long long t_duration = ProcSec() - m_shelf_life;
+		if (t_duration >= m_shelf_life)
+		{
+			m_price = m_price * (1 - 0.01 * t_duration / m_shelf_life);
+			cout << "\nSale: -" << first_price - m_price<<" RUB ";
+		}
+	}
 public:
 	Goods(string name, string reg_date,int amount,long price_one_rub, short price_one_k,int type)
 	{
@@ -100,11 +113,7 @@ public:
 		m_price.SetAcc(price_one_rub, price_one_k);
 		m_reg(reg_date.c_str());
 	}
-	long long ProcSec()
-	{
-		time_t t = time(NULL);
-		return t-t_reg;
-	}
+	
 	void SetAmount(int delta_amount)
 	{
 		m_amount += delta_amount;
@@ -126,15 +135,5 @@ public:
 		g.SetSale();
 		out << "\nName: " << g.m_name << "\nID: " << g.m_id << "\nType: " << g.Type(true) <<"\nShelf life: "<<g.m_shelf_life <<" days\nAmount: " << g.m_amount << "\nPrice: " << g.m_price<<" RUB ";
 		return out;
-	}
-	void SetSale()
-	{
-		static Money first_price = m_price;
-		long long t_duration = ProcSec()-m_shelf_life;
-		if (t_duration >= m_shelf_life)
-		{
-			m_price = m_price * (1 - 0.01 * t_duration / m_shelf_life);
-			cout << "\nSale: -"<<first_price-m_price;
-		}
 	}
 };
